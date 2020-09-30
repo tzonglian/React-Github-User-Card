@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import Card from "./Card";
 
 //Display Data
 
@@ -12,15 +13,14 @@ class App extends React.Component {
 
   componentDidMount() {
     this.fetchUser(this.state.username);
-    this.fetchFollowers(this.state.userFollowers);
+    this.fetchFollowers(this.state.username);
   }
 
   //Fetch User's Data and Followers
-  fetchUser = async (username) => {
-    await fetch(`https://api.github.com/users/${username}`)
+  fetchUser = (username) => {
+    fetch(`https://api.github.com/users/${username}`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         this.setState({
           ...this.state,
           userData: data,
@@ -30,11 +30,10 @@ class App extends React.Component {
       .catch((err) => console.log("error: ", err));
   };
 
-  fetchFollowers = async (username) => {
-    await fetch(`https://api.github.com/users/${username}/followers`)
+  fetchFollowers = (username) => {
+    fetch(`https://api.github.com/users/${username}/followers`)
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         console.log(this.state);
         this.setState({
           ...this.state,
@@ -45,32 +44,17 @@ class App extends React.Component {
   };
 
   render() {
+    console.log(this.state.userFollowers);
     return (
       <div className="App">
         <h1>Github User Card using React</h1>
         <br></br>
         <div className="cards">
-          {/* Display User Data */}
-          <div className="card">
-            <img
-              src={this.state.userData.avatar_url}
-              alt={"user's profile picture"}
-            />
-            <div className="card-info">
-              <h3 className="name">{this.state.userData.name}</h3>
-              <p className="username">{this.state.userData.login}</p>
-              <p>Location: {this.state.userData.location}</p>
-              <p>
-                Profile:
-                <a href={this.state.userData.html_url}>
-                  {this.state.userData.html_url}
-                </a>
-              </p>
-              <p>Followers: {this.state.userData.followers}</p>
-              <p>Following: {this.state.userData.following}</p>
-              <p>Bio: {this.state.userData.bio}</p>
-            </div>
-          </div>
+          <Card data={this.state.userData} key={this.state.userData.id} />
+          <h2>Followers:</h2>
+          {this.state.userFollowers.map((person) => (
+            <Card data={person} key={person} />
+          ))}
         </div>
       </div>
     );
